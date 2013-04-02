@@ -25,7 +25,7 @@ function Stepper(doms) {
 Doctape({
   appType: 'client',
   appId: '7b1fe099-b090-4ee2-996b-f83e56aee70f',
-  callbackURL: 'http://localhost:5000/',
+  callbackURL: 'http://localhost:5432/',
   scope: ['file.read', 'account']
 }).run(function () {
   var dt = this,

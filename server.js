@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var fs = require('fs'),
     https = require('https'),
     express = require('express');
@@ -63,4 +65,5 @@ app.post('/sync', function (req, res) {
 
 });
 
-app.listen(5000);
+app.listen(5432);
+console.log('Direct your browser towards http://localhost:5432 and let backtape do it\'s magic...');
