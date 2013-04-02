@@ -1,0 +1,55 @@
+<html>
+  <head>
+    <title>Backtape &mdash; for the truly paranoid.</title>
+    <script type="text/javascript" src="doctape.js"></script>
+    <style type="text/css">
+      body {
+        background: #666;
+        font: 1.3em sans-serif;
+        background-image: -webkit-linear-gradient(top, #666 0%, #fff 100%);
+        background-image: -moz-linear-gradient(top, #666 0%, #fff 100%);
+        background-image: linear-gradient(top, #666 0%, #fff 100%);
+      }
+      h1 {
+        width: 360px;
+        color: #222;
+        margin: 50px auto -.3em auto;
+      }
+      #steps {
+        width: 360px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border: 3px solid #222;
+        border-radius: 10px;
+        color: rgba(0,0,0,.9);
+        text-shadow: 1px -1px 0 rgba(255,255,255,.5);
+      }
+      #steps div {
+        padding: 10px;
+        border-radius: 5px;
+        border: 2px solid rgba(0,0,0,.5);
+        display: none;
+        margin: 5px;
+        background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.2) 0%, rgba(255,255,255,.2) 100%);
+        background-image: -moz-linear-gradient(bottom, rgba(0,0,0,.2) 0%, rgba(255,255,255,.2) 100%);
+        background-image: linear-gradient(bottom, rgba(0,0,0,.2) 0%, rgba(255,255,255,.2) 100%);
+      }
+      #steps .processing { background-color: #FFCD46; }
+      #steps .processing:before { content: '→ ' }
+      #steps .ready { background-color: #98FF45; }
+      #steps .ready:before { content: '✓ '; }
+      #steps .error { background-color: #FF2F00; }
+    </style>
+  </head>
+  <body>
+    <h1 id="headline">Backtape</h1>
+    <div id="steps">
+      <div>Connecting and logging in...</div> 
+      <div>Reading remote documents...</div>
+      <div>Comparing documents...</div>
+      <div>Syncing documents...</div>
+    </div>
+    <script type="text/javascript" src="app.js"></script>
+  </body>
+</html>
