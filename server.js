@@ -2,9 +2,10 @@
 
 var fs = require('fs'),
     https = require('https'),
-    express = require('express');
-
-var app = express();
+    express = require('express'),
+    app = express(),
+    server = require('http').createServer(app),
+    io = require('socket.io').listen(server, {log: false});
 
 app.configure(function () {
   app.use(express.bodyParser());
@@ -30,40 +31,29 @@ app.post('/diff', function (req, res) {
 
 });
 
-app.post('/sync', function (req, res) {
-
-  var token = req.param('token'),
-      docs = req.body,
-      keys = Object.keys(docs);
-
-  !function sync () {
-    if (keys.length > 0) {
-      var key = keys.shift(),
-          ext = docs[key].extension;
-      https.get('https://api.doctape.com/v1/doc/' + key + '/original?access_token=' + token, function (r) {
-        var w = fs.createWriteStream('./.' + key, {encoding: 'utf8'});
-        if (r.statusCode === 200) {
-          r.pipe(w, {end: false});
-          r.on('end', function () {
-            w.end();
-            fs.rename('./.' + key, './' + key + '.' + ext, function (err) {
-              if (err) {
-                res.send(500);
-              } else {
-                sync();
-              }
-            });
+io.sockets.on('connection', function (socket) {
+  socket.on('sync', function (data) {
+    var doc = data.doc, token = data.token;
+    https.get('https://api.doctape.com/v1/doc/' + doc.id + '/original?access_token=' + token, function (r) {
+      var w = fs.createWriteStream('./.' + doc.id + '.' + doc.extension);
+      if (r.statusCode === 200) {
+        r.pipe(w, {end: false});
+        r.on('end', function () {
+          w.end();
+          fs.rename('./.' + doc.id + '.' + doc.extension, './' + doc.id + '.' + doc.extension, function (err) {
+            if (err) {
+              socket.emit('fail', doc);
+            } else {
+              socket.emit('done', doc);
+            }
           });
-        } else {
-          res.send(500);
-        }
-      });
-    } else {
-      res.send(200);
-    }
-  }();
-
+        });
+      } else {
+        socket.emit('fail', doc);
+      }
+    });
+  });
 });
 
-app.listen(5432);
+server.listen(5432);
 console.log('Direct your browser towards http://localhost:5432 and let backtape do it\'s magic...');

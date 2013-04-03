@@ -16,7 +16,8 @@ function Stepper(doms) {
           if (c !== 'error') step.apply(null, steps);
         };
         fn(function (msg) { next('ready', msg); },
-           function (msg) { next('error', msg); });
+           function (msg) { next('error', msg); },
+           dom);
       }
     }
   };
@@ -59,17 +60,36 @@ Doctape({
         done('Found <b>'+ Object.keys(newDocs).length +' new</b> documents.');
       }, false);
     },
-    function (done, error) {
-      var syncReq = new XMLHttpRequest();
-      syncReq.open('POST', '/sync?token=' + dt.core.getValidAccessToken());
-      syncReq.setRequestHeader('Content-Type', 'application/json');
-      syncReq.send(JSON.stringify(newDocs));
-      syncReq.addEventListener('error', function (ev) {
-        error('Error syncing documents.');
-      }, false);
-      syncReq.addEventListener('load', function (ev) {
-        done('Synced documents.');
-      }, false);
+    function (done, error, dom) {
+      var socket = io.connect('http://localhost:5432'),
+          countDone = 0, countFail = 0,
+          keys = Object.keys(newDocs),
+          countAll = keys.length;
+      var sync = function () {
+        console.log('sync');
+        var key;
+        if (keys.length > 0) {
+          key = keys.shift();
+          socket.emit('sync', {doc: newDocs[key], token: dt.core.getValidAccessToken()});
+        } else {
+          done('Synced <b>'+ countDone +'</b> documents.');
+        }
+      };
+      var countUpdate = function () {
+        dom.innerHTML = 'Syncing... (' + countDone + '/' + countAll + ', ' + countFail + ' fails)';
+      }; 
+      socket.on('done', function (doc) {
+        countDone++;
+        countUpdate();
+        sync();
+      });
+      socket.on('fail', function (doc) {
+        countFail++;
+        countUpdate();
+        sync();
+      });
+      countUpdate();
+      sync();
     }
   );
 });
