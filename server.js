@@ -13,16 +13,15 @@ app.configure(function () {
 
 app.post('/diff', function (req, res) {
 
-  try { fs.mkdirSync('./Backtape'); } catch (e) {;}
-
-  fs.readdir('./Backtape', function (err, files) {
+  fs.readdir('.', function (err, files) {
     var rDocs = req.body;
     if (err) {
       res.send(500);
     } else {
       files.forEach(function (file) {
-        if (typeof rDocs[file] !== 'undefined') {
-          delete rDocs[file];
+        var id = file.split('.')[0];
+        if (typeof rDocs[id] !== 'undefined') {
+          delete rDocs[id];
         }
       });
       res.json(rDocs);
@@ -39,14 +38,15 @@ app.post('/sync', function (req, res) {
 
   !function sync () {
     if (keys.length > 0) {
-      var key = keys.shift();
+      var key = keys.shift(),
+          ext = docs[key].extension;
       https.get('https://api.doctape.com/v1/doc/' + key + '/original?access_token=' + token, function (r) {
-        var w = fs.createWriteStream('./Backtape/.' + key, {encoding: 'utf8'});
+        var w = fs.createWriteStream('./.' + key, {encoding: 'utf8'});
         if (r.statusCode === 200) {
           r.pipe(w, {end: false});
           r.on('end', function () {
             w.end();
-            fs.rename('./Backtape/.' + key, './Backtape/' + key, function (err) {
+            fs.rename('./.' + key, './' + key + '.' + ext, function (err) {
               if (err) {
                 res.send(500);
               } else {
