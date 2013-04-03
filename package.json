@@ -1,6 +1,6 @@
 {
   "name": "backtape",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A doctape client for the truly paranoid.",
   "main": "server.js",
   "dependencies": {
