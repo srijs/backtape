@@ -4,6 +4,6 @@ Backtape syncs your doctape docs onto your machine.
 
 ## Installation & Usage
 
-1. `sudo npm -g backtape`
+1. `sudo npm install -g backtape`
 2. `cd dir-to-contain-backup`
 3. `backtape`
